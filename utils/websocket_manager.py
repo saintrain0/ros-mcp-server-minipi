@@ -12,11 +12,10 @@ class WebSocketManager:
 
     def connect(self):
         if self.ws is None or not self.ws.connected:
-            sock = socket.create_connection((self.ip, self.port), source_address=(self.local_ip, 0))
-            ws = websocket.WebSocket()
-            ws.sock = sock
-            ws.connect(f"ws://{self.ip}:{self.port}")
-            self.ws = ws
+            self.ws = websocket.create_connection(
+                f"ws://{self.ip}:{self.port}",
+                source_address=(self.local_ip, 0)
+            )
             print("[WebSocket] Connected")
 
     def send(self, message: dict):
@@ -80,3 +79,10 @@ class WebSocketManager:
                 print(f"[WebSocket] Close error: {e}")
             finally:
                 self.ws = None
+if __name__ == "__main__":
+    # Example usage
+    LOCAL_IP = "192.168.0.108"  # Replace with your local IP address
+    ROSBRIDGE_IP = "192.168.0.119"  # Replace with your rosbridge server IP address
+    ROSBRIDGE_PORT = 9090
+
+    ws_manager = WebSocketManager(ROSBRIDGE_IP, ROSBRIDGE_PORT, LOCAL_IP)
