@@ -9,7 +9,7 @@ import threading
 import time
 
 LOCAL_IP = "127.0.0.1"  # Replace with your local IP address
-ROSBRIDGE_IP = "192.168.0.6"  # Replace with your rosbridge server IP address
+ROSBRIDGE_IP = "127.0.0.1"  # Replace with your rosbridge server IP address
 ROSBRIDGE_PORT = 9090
 
 mcp = FastMCP("ros-mcp-server")
