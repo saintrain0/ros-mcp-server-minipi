@@ -1,0 +1,17 @@
+[Unit]
+Description=UV MCP Server
+After=network.target rosbridge.service
+Requires=rosbridge.service
+
+[Service]
+Type=simple
+User=hightorque
+WorkingDirectory=/home/hightorque/ros-mcp-server-minipi
+ExecStart=/home/hightorque/.local/bin/uv run mcp_pipe.py server.py
+Environment="PATH=/home/hightorque/.local/bin:/home/hightorque/ros-mcp-server-minipi/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
+
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

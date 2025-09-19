@@ -1,0 +1,9 @@
+<launch>
+  <!-- 启动 rosbridge_websocket，改名 -->
+  <node pkg="rosbridge_server" type="rosbridge_websocket" name="rosbridge_websocket_auto" output="screen">
+    <param name="port" value="$(arg port)" />
+  </node>
+
+  <!-- 启动 rosapi，改名 -->
+  <node pkg="rosapi" type="rosapi_node" name="rosapi_auto" output="screen" />
+</launch>

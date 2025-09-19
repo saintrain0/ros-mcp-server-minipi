@@ -1,0 +1,26 @@
+[Unit]
+Description=ROS Bridge WebSocket
+After=network.target
+
+[Service]
+Type=simple
+User=hightorque
+Environment="ROS_MASTER_URI=http://localhost:11311"
+Environment="ROS_PACKAGE_PATH=/opt/ros/noetic/share:/opt/ros/noetic/stacks"
+Environment="PYTHONPATH=/opt/ros/noetic/lib/python3/dist-packages"
+
+# 启动前清理残留
+ExecStartPre=/bin/bash -c "source /opt/ros/noetic/setup.bash && rosnode kill /rosbridge_websocket || true"
+ExecStartPre=/bin/bash -c "source /opt/ros/noetic/setup.bash && rosnode kill /rosapi || true"
+ExecStartPre=/bin/bash -c "fuser -k 9091/tcp || true"
+ExecStartPre=/bin/sleep 3
+
+# 启动 rosbridge 并改名
+# ExecStart=/bin/bash -c "source /opt/ros/noetic/setup.bash && /usr/bin/python3 /opt/ros/noetic/bin/roslaunch rosbridge_server rosbridge_websocket.launch port:=9091"
+ExecStart=/bin/bash -c "source /opt/ros/noetic/setup.bash && /usr/bin/python3 /opt/ros/noetic/bin/roslaunch /home/hightorque/ros-mcp-server-minipi/launch/rosbridge_websocket_auto.launch port:=9091"
+
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
