@@ -1,0 +1,9 @@
+[0;1;31m●[0m ros-and-uv-startup.service - Start ROS bridge and UV server on boot
+     Loaded: loaded (/etc/systemd/system/ros-and-uv-startup.service; enabled; vendor preset: enabled)
+     Active: [0;1;31mfailed[0m (Result: exit-code) since Wed 2025-09-17 12:52:55 CST; 6s ago
+    Process: 12064 ExecStart=/bin/bash -c cd /home/hightorque/ros-mcp-server-minipi && uv run mcp-pipe.py server.py & roslaunch rosbridge_server rosbridge_websocket.launch [0;1;31m(code=exited, status=127)[0m
+   Main PID: 12064 (code=exited, status=127)
+
+Sep 17 12:52:55 lubancat systemd[1]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mros-and-uv-startup.service: Start request repeated too quickly.[0m
+Sep 17 12:52:55 lubancat systemd[1]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mros-and-uv-startup.service: Failed with result 'exit-code'.[0m
+Sep 17 12:52:55 lubancat systemd[1]: [0;1;31m[0;1;39m[0;1;31mFailed to start Start ROS bridge and UV server on boot.[0m

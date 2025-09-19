@@ -179,7 +179,7 @@ if __name__ == "__main__":
     mcp_script = sys.argv[1]
     
     # Get token from environment variable or command line arguments
-    endpoint_url = "wss://api.xiaozhi.me/mcp/?token=eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjM4NDA2OSwiYWdlbnRJZCI6NDYyODkyLCJlbmRwb2ludElkIjoiYWdlbnRfNDYyODkyIiwicHVycG9zZSI6Im1jcC1lbmRwb2ludCIsImlhdCI6MTc1MTk0NDEwNX0.fAjNDxmyDCH_Tq_HOZ_LZrh528-cB0z0s49oX-YOwhxGHqlF0z-gzE2_57vKXokeYotJv8F8nMJMQbDBNRJY-Q"
+    endpoint_url = "wss://api.xiaozhi.me/mcp/?token=eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3MjcwOSwiYWdlbnRJZCI6MjEwMzUyLCJlbmRwb2ludElkIjoiYWdlbnRfMjEwMzUyIiwicHVycG9zZSI6Im1jcC1lbmRwb2ludCIsImlhdCI6MTc1NzkxNDk1OSwiZXhwIjoxNzg5NDcyNTU5fQ.zMY54zvtOftv6Xi-OtytYSiwGSR-eygAZbyqphMOyWaKgHX10lBzuxfpSqa0BUU8uDtJoa1PpPS-zFNux7cgDQ"
     if not endpoint_url:
         logger.error("Please set the `MCP_ENDPOINT` environment variable")
         sys.exit(1)

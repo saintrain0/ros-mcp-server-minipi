@@ -1,0 +1,23 @@
+[0;1;32m●[0m rosbridge.service - ROS Bridge WebSocket
+     Loaded: loaded (/etc/systemd/system/rosbridge.service; enabled; vendor preset: enabled)
+     Active: [0;1;32mactive (running)[0m since Wed 2025-09-17 15:29:11 CST; 18s ago
+   Main PID: 330528 (roslaunch)
+      Tasks: 25 (limit: 19094)
+     Memory: 130.7M
+     CGroup: /system.slice/rosbridge.service
+             ├─330528 /usr/bin/python3 /opt/ros/noetic/bin/roslaunch rosbridge_server rosbridge_websocket.launch port:=9091
+             ├─330666 /usr/bin/python3 /opt/ros/noetic/bin/rosmaster --core -p 11311 -w 3 __log:=/home/hightorque/.ros/log/01aea05a-9398-11f0-96da-dc4a9e368f4f/master.log
+             ├─330724 /opt/ros/noetic/lib/rosout/rosout __name:=rosout __log:=/home/hightorque/.ros/log/01aea05a-9398-11f0-96da-dc4a9e368f4f/rosout-1.log
+             ├─330737 python3 /opt/ros/noetic/lib/rosbridge_server/rosbridge_websocket __name:=rosbridge_websocket __log:=/home/hightorque/.ros/log/01aea05a-9398-11f0-96da-dc4a9e368f4f/rosbridge_websocket-2.log
+             └─330738 python3 /opt/ros/noetic/lib/rosapi/rosapi_node __name:=rosapi __log:=/home/hightorque/.ros/log/01aea05a-9398-11f0-96da-dc4a9e368f4f/rosapi-3.log
+
+Sep 17 15:29:13 lubancat bash[330737]: 2025-09-17 15:29:13+0800 [-]  - <class 'rosbridge_library.capabilities.publish.Publish'>
+Sep 17 15:29:13 lubancat bash[330737]: 2025-09-17 15:29:13+0800 [-]  - <class 'rosbridge_library.capabilities.subscribe.Subscribe'>
+Sep 17 15:29:13 lubancat bash[330737]: 2025-09-17 15:29:13+0800 [-]  - <class 'rosbridge_library.capabilities.defragmentation.Defragment'>
+Sep 17 15:29:13 lubancat bash[330737]: 2025-09-17 15:29:13+0800 [-]  - <class 'rosbridge_library.capabilities.advertise_service.AdvertiseService'>
+Sep 17 15:29:13 lubancat bash[330737]: 2025-09-17 15:29:13+0800 [-]  - <class 'rosbridge_library.capabilities.service_response.ServiceResponse'>
+Sep 17 15:29:13 lubancat bash[330737]: 2025-09-17 15:29:13+0800 [-]  - <class 'rosbridge_library.capabilities.unadvertise_service.UnadvertiseService'>
+Sep 17 15:29:14 lubancat bash[330737]: 2025-09-17 15:29:14+0800 [-] [WARN] [1758094154.175199]: Unable to start server: Couldn't listen on any:9091: [Errno 98] Address already in use. Retrying in 5s.
+Sep 17 15:29:19 lubancat bash[330737]: 2025-09-17 15:29:19+0800 [-] [WARN] [1758094159.183368]: Unable to start server: Couldn't listen on any:9091: [Errno 98] Address already in use. Retrying in 5s.
+Sep 17 15:29:24 lubancat bash[330737]: 2025-09-17 15:29:24+0800 [-] [WARN] [1758094164.193989]: Unable to start server: Couldn't listen on any:9091: [Errno 98] Address already in use. Retrying in 5s.
+Sep 17 15:29:29 lubancat bash[330737]: 2025-09-17 15:29:29+0800 [-] [WARN] [1758094169.203343]: Unable to start server: Couldn't listen on any:9091: [Errno 98] Address already in use. Retrying in 5s.
