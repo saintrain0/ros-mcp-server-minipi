@@ -8,6 +8,7 @@ from msgs.sensor_msgs import Image, JointState, Joy
 import threading
 import time
 import random
+import re
 
 LOCAL_IP = "127.0.0.1"  # Replace with your local IP address
 ROSBRIDGE_IP = "127.0.0.1"  # Replace with your rosbridge server IP address
@@ -195,27 +196,91 @@ def joy_ready():
 #     # release_joy_buttons(delay=0.5)
 #     return "Stop walk in place command sent" if msg is not None else "Failed to send stop walk in place command"
 
-@mcp.tool(description="机器人前进")
-def joy_forward():
+# @mcp.tool(description="机器人前进")
+# def joy_forward():
+#     #左摇杆上推，axes[1]=1.0
+#     axes = [0.0]*8
+#     axes[1] = 0.8
+#     buttons = [0]*11
+#     msg = joy.publish(axes, buttons)
+#     ws_manager.close()
+#     release_joy_buttons(delay=2)
+#     return "Forward command sent" if msg is not None else "Failed to send forward command"
+
+# @mcp.tool(description="机器人后退")
+# def joy_backward():
+#     #左摇杆下推，axes[1]=-1.0
+#     axes = [0.0]*8
+#     axes[1] = -0.8
+#     buttons = [0]*11
+#     msg = joy.publish(axes, buttons)
+#     ws_manager.close()
+#     release_joy_buttons(delay=1.5)
+#     return "Backward command sent" if msg is not None else "Failed to send backward command"
+
+
+
+@mcp.tool(description="机器人前进，支持步数或米数，例如'前进3步'或'往前走2米'")
+def joy_forward(distance: str = None):
+    """
+    让机器人前进指定距离
+    
+    参数:
+        distance: 距离描述，如"3步"或"2米"
+    """
+    # 解析距离参数，默认为1步
+    delay = 1.5  # 默认3步的时间
+    if distance:
+        # 使用正则表达式提取数字和单位
+        match = re.match(r'(\d+)\s*(步|米)', distance)
+        if match:
+            value = int(match.group(1))
+            unit = match.group(2)
+            # 根据单位计算延迟时间
+            if unit == '步':
+                delay = value * 0.5  # 每步0.5秒
+            elif unit == '米':
+                delay = value * 3     # 每米3秒
+    
     # 左摇杆上推，axes[1]=1.0
     axes = [0.0]*8
     axes[1] = 0.8
     buttons = [0]*11
     msg = joy.publish(axes, buttons)
     ws_manager.close()
-    release_joy_buttons(delay=1.5)
-    return "Forward command sent" if msg is not None else "Failed to send forward command"
+    release_joy_buttons(delay=delay)
+    return f"Forward {distance} command sent (delay: {delay}s)" if msg is not None else "Failed to send forward command"
 
-@mcp.tool(description="机器人后退")
-def joy_backward():
+@mcp.tool(description="机器人后退，支持步数或米数，例如'后退5步'或'后退3米'")
+def joy_backward(distance: str = None):
+    """
+    让机器人后退指定距离
+    
+    参数:
+        distance: 距离描述，如"5步"或"3米"
+    """
+    # 解析距离参数，默认为1步
+    delay = 1.5  # 默认1步的时间
+    if distance:
+        # 使用正则表达式提取数字和单位
+        match = re.match(r'(\d+)\s*(步|米)', distance)
+        if match:
+            value = int(match.group(1))
+            unit = match.group(2)
+            # 根据单位计算延迟时间
+            if unit == '步':
+                delay = value * 0.5  # 每步0.5秒
+            elif unit == '米':
+                delay = value * 3     # 每米3秒
+    
     # 左摇杆下推，axes[1]=-1.0
     axes = [0.0]*8
     axes[1] = -0.8
     buttons = [0]*11
     msg = joy.publish(axes, buttons)
     ws_manager.close()
-    release_joy_buttons(delay=1)
-    return "Backward command sent" if msg is not None else "Failed to send backward command"
+    release_joy_buttons(delay=delay)
+    return f"Backward {distance} command sent (delay: {delay}s)" if msg is not None else "Failed to send backward command"
 
 @mcp.tool(description="机器人左转")
 def joy_turn_left():
