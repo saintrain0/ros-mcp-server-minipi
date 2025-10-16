@@ -1,42 +1,56 @@
-# 小派机器人MCP控制
+# minipi pro-v1机器人MCP控制
+
 ## 技术文档来源于：
+
 https://chainpray.top/mini-pi%E8%AF%AD%E9%9F%B3%E4%BA%A4%E4%BA%92%EF%BC%88%E5%B0%8F%E6%99%BAmcp%EF%BC%89%E6%8A%80%E6%9C%AF%E6%96%87%E6%A1%A3/
+
 ## Getting started 基本操作
+
 ### 开机：
+
 1、背面。电池：先短按再长按；
 
 2、正面。先按右侧按键2秒，再短按左侧按键，红色指示灯亮起，屏幕亮起；
 
 3、遥控：LT+RT+START启动、LT+RT+LB开始操控
+
 ### 关机：
+
 1、LT+RT+RB待机(蹲下)
 
 2、正面。先短按左侧按键，再按右侧按键2秒，指示灯熄灭；
 
 3、背面。电池：先短按再长按；
+
 ### 遥控：
+
 ```
 #监测遥控按键状态（等待1min后可查看状态）
 rostopic echo /joy  
 ```
+
 ### `RT+X` 左右前后倾斜(删除所有路点)
+
 ### `LT+RT+A` 扭动
+
 ### `LT+RT+B` 退出当前模式
+
 ### `LT+RT+←/→` 选择模式
+
 ```
 | 按键buttons  | 索引 |   范围 |           说明         |
 |--------------|------|---------------------------------|
-| A            | B0   | 0 -> 1 |                        |       
-| B            | B1   | 0 -> 1 |                        |       
-| X            | B2   | 0 -> 1 |                        |       
-| Y            | B3   | 0 -> 1 |                        |       
-| LB           | B4   | 0 -> 1 | 左肩键                 |       
-| RB           | B5   | 0 -> 1 | 右肩键                 |       
-| BACK         | B6   | 0 -> 1 |                        |       
-| START        | B7   | 0 -> 1 |                        |       
-| 开关键(北通) | B8   | 0 -> 1 | 视具体手柄而定         |       
-| 左摇杆按下   | B9   | 0 -> 1 | Left Stick Press       |       
-| 右摇杆按下   | B10  | 0 -> 1 | Right Stick Press      |       
+| A            | B0   | 0 -> 1 |                        |     
+| B            | B1   | 0 -> 1 |                        |     
+| X            | B2   | 0 -> 1 |                        |     
+| Y            | B3   | 0 -> 1 |                        |     
+| LB           | B4   | 0 -> 1 | 左肩键                 |     
+| RB           | B5   | 0 -> 1 | 右肩键                 |     
+| BACK         | B6   | 0 -> 1 |                        |     
+| START        | B7   | 0 -> 1 |                        |     
+| 开关键(北通) | B8   | 0 -> 1 | 视具体手柄而定         |     
+| 左摇杆按下   | B9   | 0 -> 1 | Left Stick Press       |     
+| 右摇杆按下   | B10  | 0 -> 1 | Right Stick Press      |     
 
 | 名称axes     | 索引 |     范围    | 说明              |
 | 左摇杆:左->右| A0   | 1.0 -> -1.0 |                   |
@@ -67,64 +81,82 @@ axes[3]=-1.0            # 右摇杆右推
 
 #查看本机ros版本
 `echo $ROS_DISTRO`
-【可能查询到是`noetic`】
+【可能查询到是 `noetic`】
 
 #然后安装对应ros版本的rosbridge
+
 ```
-sudo apt-get install ros-<rosdistro>-rosbridge-suite
+sudo apt-get install ros-noetic-rosbridge-suite
 ```
+
 #安装完成后运行
+
 ```
 roslaunch rosbridge_server rosbridge_websocket.launch
 ```
-#出现类似`[INFO] WebSocket server started on port 9090`说明安装并启动成功
+
+#出现类似 `[INFO] WebSocket server started on port 9090`说明安装并启动成功
 
 1.2配置MCP服务器
-#从`GitHub - moneypiaorui/ros-mcp-server-minipi`拉取MCP服务器源代码
+#从 `GitHub - moneypiaorui/ros-mcp-server-minipi`拉取MCP服务器源代码
+
 ```
 git clone https://github.com/moneypiaorui/ros-mcp-server-minipi.git
 ```
-#前往`xiaozhi.me`获取MCP接入点地址,编辑`mcp-pipe.py`,搜索`endpoint_url`，粘贴接入点地址后保存。
+
+#前往 `xiaozhi.me`获取MCP接入点地址,编辑 `mcp-pipe.py`,搜索 `endpoint_url`，粘贴接入点地址后保存。
 
 #安装uv:
+
 ```
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
-#然后cd到`ros-mcp-server-minipi`文件夹下，运行
+
+#然后cd到 `ros-mcp-server-minipi`文件夹下，运行
+
 ```
 uv run mcp-pipe.py server.py
 ```
+
 #uv会自动创建虚拟环境并安装依赖，然后运行python代码
 
-2.正式运行 
+2.正式运行
 2.1手柄控制脚本
+
 ```
 cd sim2real_master
 source devel/setup.bash
 roslaunch sim2real_master joy_controler.launch
 ```
+
 #运行之后，小派就可以用蓝牙手柄控制
 #这一步有可能已经自动启用了，开机之后直接就可以使用手柄控制。（我尝试再执行，有报错。）
 
 2.2启动rosbridge
+
 ```
 roslaunch rosbridge_server rosbridge_websocket.launch port:=9091
 ```
+
 #默认端口是9090，但实践中9090有时会被占用，因此指定了9091，server.py里也需要同步修改为9091.
 #如果使用9090端口，也被占用了，临时解决：
+
 ```
 sudo kill $(sudo lsof -t -i :9090) 2>/dev/null
 ```
+
 2.3启动MCP
-终端cd到`ros-mcp-server-minipi`文件夹下，运行
+终端cd到 `ros-mcp-server-minipi`文件夹下，运行
+
 ```
-uv run mcp-pipe.py server.py
+uv run mcp_pipe.py server.py
 ```
 
 2.4小智使用
 启动/重启小智就可以对话控制小派了，调用MCP工具时会在屏幕上显示一串用%%包裹的方法，说明工具调用成功
 
 2.5参考指令
+
 ```
 我叫{{assistant_name}}，一个双足人形机器人。
 【我的角色】
@@ -158,22 +190,25 @@ uv run mcp-pipe.py server.py
 【语音交互功能】
 背后用到的大模型是阿里云发布的通义千问实时模型。通过大模型理解人类复杂指令，实现精准动作触发。
 ```
-`rosbridge.service`和`uv-server.service`是用于每次机器人开机后自动启动，不再需要手动运行这两行代码：
+
+`rosbridge.service`和 `uv-server.service`是用于每次机器人开机后自动启动，不再需要手动运行这两行代码：
+
 ```
 roslaunch rosbridge_server rosbridge_websocket.launch port:=9091
 uv run mcp-pipe.py server.py
 ```
-`rosbridge_websocket_auto.launch`是用于替代`rosbridge_websocket.launch`以免节点名重复。
+
+`rosbridge_websocket_auto.launch`是用于替代 `rosbridge_websocket.launch`以免节点名重复。
 这个文件处于机器人ubuntu系统中的位置：
+
 ```
 ~/ros-mcp-server-minipi/launch/rosbridge_websocket_auto.launch
 ```
 
-
 ## 以下还未实测。
 
 3.MCP功能测试
-在小派机器人上启动`rosbridge`后就可以在同局域网下的PC上测试并开发MCP server，具体方法如下
+在小派机器人上启动 `rosbridge`后就可以在同局域网下的PC上测试并开发MCP server，具体方法如下
 
 3.1修改server.py
 测试需要在PC上启动MCP服务器并通过rosbridge控制小派
@@ -182,7 +217,7 @@ uv run mcp-pipe.py server.py
 
 server.py拉到最后一行将mcp.run的启动方式从stdio改成sse(网络连接)
 
-然后终端cd到项目文件件运行`uv run server.py`，出现以下输出说明启动成功，并复制`http://0.0.0.0:8000`类似的一串网址
+然后终端cd到项目文件件运行 `uv run server.py`，出现以下输出说明启动成功，并复制 `http://0.0.0.0:8000`类似的一串网址
 
 ![alt text](/pic/eef10939190edaad025d2c7dea28f7e8_1754886420-image.png)
 3.2配置MCP host
@@ -196,7 +231,7 @@ VScode启用copilot后在右下角会有一个扳手的图标，点击后顶部�
 
 ![alt text](/pic/0472c2ed28cca91f882f7592e4959709_1754718321-image.png)
 ![alt text](/pic/82da8f343315733cdeb0e9bbb85385f0_1754886457-image.png)
-粘贴3.1步启动后的网址，并额外在后面输入`"/sse"`，例如`http://0.0.0.0:8000/sse`，然后一路选择第一个选项，完成后弹出mcp.json，并出现以下配置项说明MCP Client配置成功
+粘贴3.1步启动后的网址，并额外在后面输入 `"/sse"`，例如 `http://0.0.0.0:8000/sse`，然后一路选择第一个选项，完成后弹出mcp.json，并出现以下配置项说明MCP Client配置成功
 
 ![alt text](/pic/c3718a7f2bd47f45d30ee680af5bc012_1754886779-image.png)
 
@@ -223,4 +258,3 @@ A:通过HDMI连接小派能够看到名为“mcp”的终端窗口出现类似�
 除此以外mcp tool可以增加诸如距离，角度等参数提高动作自由度，并获取ros相关节点的数据并返回作为工具执行结果
 
 不过以上还需要硬件厂商做好相关适配
-
