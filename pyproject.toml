@@ -1,4 +1,7 @@
+[[tool.uv.index]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 [project]
+default = true
 name = "ros-mcp-server"
 version = "0.1.0"
 description = "Add your description here"

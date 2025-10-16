@@ -68,7 +68,7 @@ async def connect_to_server(uri):
             
             # Start mcp_script process
             process = subprocess.Popen(
-                ['uv',"run", mcp_script],
+                ['/home/hightorque/uv','run', mcp_script],
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -179,7 +179,8 @@ if __name__ == "__main__":
     mcp_script = sys.argv[1]
     
     # Get token from environment variable or command line arguments
-    endpoint_url = "wss://api.xiaozhi.me/mcp/?token=eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3MjcwOSwiYWdlbnRJZCI6MjEwMzUyLCJlbmRwb2ludElkIjoiYWdlbnRfMjEwMzUyIiwicHVycG9zZSI6Im1jcC1lbmRwb2ludCIsImlhdCI6MTc1NzkxNDk1OSwiZXhwIjoxNzg5NDcyNTU5fQ.zMY54zvtOftv6Xi-OtytYSiwGSR-eygAZbyqphMOyWaKgHX10lBzuxfpSqa0BUU8uDtJoa1PpPS-zFNux7cgDQ"
+    #endpoint_url = "wss://api.xiaozhi.me/mcp/?token=eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMzNSwiYWdlbnRJZCI6NzEyNDYsImVuZHBvaW50SWQiOiJhZ2VudF83MTI0NiIsInB1cnBvc2UiOiJtY3AtZW5kcG9pbnQiLCJpYXQiOjE3NTgxNzk2NTcsImV4cCI6MTc4OTczNzI1N30.xHggbR2PrclpD4AHdchBCHmHNHDor1-gCPPYRNpklpITl5b0XAbDR4XwtFXIovV9aaf19-f7ZciywK-Q9JYVBA"
+    endpoint_url = "wss://api.xiaozhi.me/mcp/?token=eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3MjcwOSwiYWdlbnRJZCI6NzU3OTAwLCJlbmRwb2ludElkIjoiYWdlbnRfNzU3OTAwIiwicHVycG9zZSI6Im1jcC1lbmRwb2ludCIsImlhdCI6MTc2MDU4Njk2MiwiZXhwIjoxNzkyMTQ0NTYyfQ.xu-hJ_hOe8rhjI5ngKimzSR43UalFL_hiNLJbl3sSaStisXBzJHE4Zl_Ur0hKtPl3yAwCmiTCGY2pppYtBZDjA"
     if not endpoint_url:
         logger.error("Please set the `MCP_ENDPOINT` environment variable")
         sys.exit(1)

@@ -7,14 +7,16 @@ from msgs.geometry_msgs import Twist
 from msgs.sensor_msgs import Image, JointState, Joy
 import threading
 import time
-import random
-import re
+import logging
+
+logger = logging.getLogger('jokes_mcp')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 LOCAL_IP = "127.0.0.1"  # Replace with your local IP address
 ROSBRIDGE_IP = "127.0.0.1"  # Replace with your rosbridge server IP address
 ROSBRIDGE_PORT = 9091
 
-mcp = FastMCP("ros-mcp-server")
+mcp = FastMCP("ros-mcp-server",host="0.0.0.0")
 ws_manager = WebSocketManager(ROSBRIDGE_IP, ROSBRIDGE_PORT, LOCAL_IP)
 twist = Twist(ws_manager, topic="/cmd_vel")
 image = Image(ws_manager, topic="/camera/image_raw")
@@ -39,7 +41,7 @@ def get_topics():
 # def pub_twist(linear: List[Any], angular: List[Any]):
 #     msg = twist.publish(linear, angular)
 #     ws_manager.close()
-    
+
 #     if msg is not None:
 #         return "Twist message published successfully"
 #     else:
@@ -54,7 +56,7 @@ def get_topics():
 # def sub_image():
 #     msg = image.subscribe()
 #     ws_manager.close()
-    
+
 #     if msg is not None:
 #         return "Image data received and downloaded successfully"
 #     else:
@@ -87,7 +89,6 @@ def get_topics():
 #     else:
 #         return "No message published"
 
-
 @mcp.tool(description="订阅 Joy 虚拟手柄消息")
 def sub_joy():
     msg = joy.subscribe()
@@ -105,216 +106,115 @@ def release_joy_buttons(delay=0.1):
         joy.publish(axes, buttons)
         ws_manager.close()
     threading.Thread(target=delayed_release).start()
-    
-    
 
-@mcp.tool(description="机器人站起来")
+@mcp.tool(description="站起来")
 def joy_stand_up():
-    # 左摇杆按下 buttons[9] = 1  # Left Stick Press
+    # 左摇杆按下，axes[9]=1
     axes = [0.0]*8
     buttons = [0]*11
-    axes[2] = -1.0  # LT
-    axes[5] = -1.0  # RT
-    buttons[7] = 1  # START
+    buttons[9] = 1  # Left Stick Press
     msg = joy.publish(axes, buttons)
     ws_manager.close()
-    release_joy_buttons(delay=1)
+    release_joy_buttons()
+    logger.info("机器人 站起来")
     return "Stand up command sent" if msg is not None else "Failed to send stand up command"
 
-
-@mcp.tool(description="机器人预备或准备")
-def joy_ready():
+@mcp.tool(description="原地踏步")
+def joy_walk_in_place():
+    # LB 按下，buttons[4]=1
     axes = [0.0]*8
     buttons = [0]*11
-    axes[2] = -1.0  # LT
-    axes[5] = -1.0  # RT
     buttons[4] = 1  # LB
     msg = joy.publish(axes, buttons)
     ws_manager.close()
-    release_joy_buttons(delay=1)
-    return "Ready command sent" if msg is not None else "Failed to send Ready command"
+    release_joy_buttons()
+    logger.info("机器人 原地踏步")
+    return "Walk in place command sent" if msg is not None else "Failed to send walk in place command"
 
-# @mcp.tool(description="机器人原地踏步")
-# def joy_walk_in_place():
-#     # LB 按下，buttons[4]=1
-#     axes = [0.0]*8
-#     buttons = [0]*11
-#     axes[2] = -1.0  # LT
-#     axes[5] = -1.0  # RT
-#     buttons[4] = 1  # LB
-#     msg = joy.publish(axes, buttons)
-#     ws_manager.close()
-#     release_joy_buttons(delay=0.5)
-#     # time.sleep(0.5)
-#     # axes = [0.0]*8
-#     # buttons = [0]*11
-#     # axes[2] = -1.0  # LT
-#     # axes[5] = -1.0  # RT
-#     # axes[6] = 1.0  # 十字左
-#     # msg = joy.publish(axes, buttons)
-#     # ws_manager.close()
-#     # release_joy_buttons(delay=0.5)
-#     # time.sleep(0.5)
-#     # axes = [0.0]*8
-#     # buttons = [0]*11
-#     # axes[2] = -1.0  # LT
-#     # axes[5] = -1.0  # RT
-#     # buttons[4] = 1  # LB
-#     # msg = joy.publish(axes, buttons)
-#     # ws_manager.close()
-#     # release_joy_buttons(delay=1)
-#     return "Walk in place command sent" if msg is not None else "Failed to send walk in place command"
+@mcp.tool(description="停下")
+def joy_stop_walk_in_place():
+    # LB 再次按下，buttons[4]=1
+    axes = [0.0]*8
+    buttons = [0]*11
+    buttons[4] = 1  # LB
+    msg = joy.publish(axes, buttons)
+    ws_manager.close()
+    release_joy_buttons()
+    logger.info("机器人 停下")
+    return "Stop walk in place command sent" if msg is not None else "Failed to send stop walk in place command"
 
-# @mcp.tool(description="机器人停止原地踏步，站稳")
-# def joy_stop_walk_in_place():
-#     # LB 再次按下，buttons[4]=1
-#     axes = [0.0]*8
-#     buttons = [0]*11
-#     axes[2] = -1.0  # LT
-#     axes[5] = -1.0  # RT
-#     buttons[4] = 1  # LB
-#     msg = joy.publish(axes, buttons)
-#     ws_manager.close()
-#     release_joy_buttons(delay=0.5)
-#     # time.sleep(0.5)
-#     # axes = [0.0]*8
-#     # buttons = [0]*11
-#     # axes[2] = -1.0  # LT
-#     # axes[5] = -1.0  # RT
-#     # axes[6] = 1.0  # 十字左
-#     # msg = joy.publish(axes, buttons)
-#     # ws_manager.close()
-#     # release_joy_buttons(delay=0.5)
-#     # time.sleep(0.5)
-#     # axes = [0.0]*8
-#     # buttons = [0]*11
-#     # axes[2] = -1.0  # LT
-#     # axes[5] = -1.0  # RT
-#     # buttons[4] = 1  # LB
-#     # msg = joy.publish(axes, buttons)
-#     # ws_manager.close()
-#     # release_joy_buttons(delay=0.5)
-#     return "Stop walk in place command sent" if msg is not None else "Failed to send stop walk in place command"
-
-# @mcp.tool(description="机器人前进")
-# def joy_forward():
-#     #左摇杆上推，axes[1]=1.0
-#     axes = [0.0]*8
-#     axes[1] = 0.8
-#     buttons = [0]*11
-#     msg = joy.publish(axes, buttons)
-#     ws_manager.close()
-#     release_joy_buttons(delay=2)
-#     return "Forward command sent" if msg is not None else "Failed to send forward command"
-
-# @mcp.tool(description="机器人后退")
-# def joy_backward():
-#     #左摇杆下推，axes[1]=-1.0
-#     axes = [0.0]*8
-#     axes[1] = -0.8
-#     buttons = [0]*11
-#     msg = joy.publish(axes, buttons)
-#     ws_manager.close()
-#     release_joy_buttons(delay=1.5)
-#     return "Backward command sent" if msg is not None else "Failed to send backward command"
-
-
-
-@mcp.tool(description="机器人前进，支持步数或米数，例如'前进3步'或'往前走2米'")
-def joy_forward(distance: str = None):
-    """
-    让机器人前进指定距离
-    
-    参数:
-        distance: 距离描述，如"3步"或"2米"
-    """
-    # 解析距离参数，默认为1步
-    delay = 1.5  # 默认3步的时间
-    if distance:
-        # 使用正则表达式提取数字和单位
-        match = re.match(r'(\d+)\s*(步|米)', distance)
-        if match:
-            value = int(match.group(1))
-            unit = match.group(2)
-            # 根据单位计算延迟时间
-            if unit == '步':
-                delay = value * 0.5  # 每步0.5秒
-            elif unit == '米':
-                delay = value * 3     # 每米3秒
-    
+@mcp.tool(description="前进")
+def joy_forward():
     # 左摇杆上推，axes[1]=1.0
     axes = [0.0]*8
-    axes[1] = 0.8
+    axes[1] = 1.0
     buttons = [0]*11
     msg = joy.publish(axes, buttons)
     ws_manager.close()
-    release_joy_buttons(delay=delay)
-    return f"Forward {distance} command sent (delay: {delay}s)" if msg is not None else "Failed to send forward command"
+    release_joy_buttons(delay=2)
+    logger.info("机器人 前进")
+    return "Forward command sent" if msg is not None else "Failed to send forward command"
 
-@mcp.tool(description="机器人后退，支持步数或米数，例如'后退5步'或'后退3米'")
-def joy_backward(distance: str = None):
-    """
-    让机器人后退指定距离
-    
-    参数:
-        distance: 距离描述，如"5步"或"3米"
-    """
-    # 解析距离参数，默认为1步
-    delay = 1.5  # 默认1步的时间
-    if distance:
-        # 使用正则表达式提取数字和单位
-        match = re.match(r'(\d+)\s*(步|米)', distance)
-        if match:
-            value = int(match.group(1))
-            unit = match.group(2)
-            # 根据单位计算延迟时间
-            if unit == '步':
-                delay = value * 0.5  # 每步0.5秒
-            elif unit == '米':
-                delay = value * 3     # 每米3秒
-    
+@mcp.tool(description="后退")
+def joy_backward():
     # 左摇杆下推，axes[1]=-1.0
     axes = [0.0]*8
-    axes[1] = -0.8
+    axes[1] = -0.5
     buttons = [0]*11
     msg = joy.publish(axes, buttons)
     ws_manager.close()
-    release_joy_buttons(delay=delay)
-    return f"Backward {distance} command sent (delay: {delay}s)" if msg is not None else "Failed to send backward command"
+    release_joy_buttons(delay=1)
+    logger.info("机器人 后退")
+    return "Backward command sent" if msg is not None else "Failed to send backward command"
 
-@mcp.tool(description="机器人左转")
+@mcp.tool(description="左转")
 def joy_turn_left():
     # 右摇杆左推，axes[3]=1.0
     axes = [0.0]*8
-    axes[3] = 0.8
+    axes[3] = 0.6
     buttons = [0]*11
     msg = joy.publish(axes, buttons)
     ws_manager.close()
-    release_joy_buttons(delay=2)
+    release_joy_buttons(delay=3)
+    logger.info("机器人 左转")
     return "Turn left command sent" if msg is not None else "Failed to send turn left command"
 
-@mcp.tool(description="机器人右转")
+@mcp.tool(description="右转")
 def joy_turn_right():
     # 右摇杆右推，axes[3]=-1.0
     axes = [0.0]*8
-    axes[3] = -0.8
+    axes[3] = -0.6
     buttons = [0]*11
     msg = joy.publish(axes, buttons)
     ws_manager.close()
-    release_joy_buttons(delay=2)
+    release_joy_buttons(delay=3)
+    logger.info("机器人 右转")
     return "Turn right command sent" if msg is not None else "Failed to send turn right command"
 
+# @mcp.tool(description="机器人坐下")
+# def joy_stop():
+#     # RB 按下，buttons[5]=1
+#     axes = [0.0]*8
+#     buttons = [0]*11
+#     buttons[5] = 1  # RB
+#     msg = joy.publish(axes, buttons)
+#     ws_manager.close()
+#     release_joy_buttons()
+#     return "Stop command sent" if msg is not None else "Failed to send stop command"
 
-@mcp.tool(description="机器人跳舞或扭腰、撒娇、伸懒腰")
-def joy_Dance():
+
+@mcp.tool(description="扭腰")
+def joy_turn_waist():
+    # 右摇杆右推，axes[3]=-1.0
     axes = [0.0]*8
+   #axes[2] = -1.0
+    axes[5] = -1.0
     buttons = [0]*11
-    axes[5] = -1.0  # RT
-    buttons[0] = 1  # A
+    buttons[0] = 1
     msg = joy.publish(axes, buttons)
     ws_manager.close()
-    release_joy_buttons(delay=1)
-    return "Dance command sent" if msg is not None else "Failed to send Dance command"
+    logger.info("机器人 扭腰")
+    return "Turn waist command sent" if msg is not None else "Failed to send turn waist command"
 
 @mcp.tool(description="机器人劈叉、一字马或分腿")
 def joy_Split():
@@ -349,44 +249,6 @@ def joy_Leg_stretches():
     release_joy_buttons(delay=1)
     return "Leg stretches command sent" if msg is not None else "Failed to send Leg stretches command"
 
-@mcp.tool(description="机器人坐下，也可以称为是蹲下、趴下、休息")
-def joy_stop():
-    # RB 按下，buttons[5]=1
-    axes = [0.0]*8
-    buttons = [0]*11
-    axes[2] = -1.0  # LT
-    axes[5] = -1.0  # RT
-    buttons[5] = 1  # RB
-    msg = joy.publish(axes, buttons)
-    ws_manager.close()
-    release_joy_buttons(delay=1)
-    return "Stop command sent" if msg is not None else "Failed to send stop command"
-
-
-
-@mcp.tool(description="机器人FREE STYLE,自由发挥")
-def joy_free_style():
-    def run_actions():
-        axes = [0.0]*8
-        buttons = [0]*11    
-        for i in range(10):
-            axes[0] = random.uniform(-0.3, 0.3)
-            axes[1] = random.uniform(-0.3, 0.3)
-            axes[3] = random.uniform(-1.0, 1.0)
-            axes[4] = random.uniform(-1.0, 1.0)
-            joy.publish(axes, buttons)
-            time.sleep(1)
-        ws_manager.close()
-        release_joy_buttons(delay=1)
-
-    # 后台线程执行，不阻塞return
-    threading.Thread(target=run_actions, daemon=True).start()
-
-    return "Free_style command sent" 
-
-
-
 
 if __name__ == "__main__":
     mcp.run(transport="stdio")
-
